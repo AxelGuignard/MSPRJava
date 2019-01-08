@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "135218827131-4uckj4gt2u9c2kp9b1d44jf87sbghhis.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.romain.face_recognition",
+            "certificate_hash": "e1b5a276e4a9387925be1fc7be974a258f61749c"
+          }
+        },
+        {
           "client_id": "135218827131-7pcah278u874li0gd2oce1mbs8h8nlru.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "135218827131-7pcah278u874li0gd2oce1mbs8h8nlru.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
