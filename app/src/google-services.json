@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "135218827131",
+    "firebase_url": "https://robotic-algebra-192908.firebaseio.com",
+    "project_id": "robotic-algebra-192908",
+    "storage_bucket": "robotic-algebra-192908.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135218827131:android:358c71d88f25b7df",
+        "android_client_info": {
+          "package_name": "com.example.romain.face_recognition"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "135218827131-7pcah278u874li0gd2oce1mbs8h8nlru.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtnzEyXBR5JfyfXQjWKwhCDc5_rYmAxb0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
