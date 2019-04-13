@@ -15,15 +15,21 @@ import android.view.*;
 import android.graphics.*;
 import android.widget.*;
 import android.provider.*;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.microsoft.projectoxford.face.*;
 import com.microsoft.projectoxford.face.contract.*;
 
 public class MainActivity extends Activity {
 
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
     private final int PICK_IMAGE = 1;
     private final int REQUEST_IMAGE_CAPTURE = 1;
     private ProgressDialog detectionProgressDialog;
-    private Uri mCurrentPhotoPath;
+    public Uri mCurrentPhotoPath;
 
     // Replace `<API endpoint>` with the Azure region associated with
 // your subscription key. For example,
@@ -87,6 +93,12 @@ public class MainActivity extends Activity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            StorageReference imageref = storage.getReference();
+
+            StorageMetadata metadata = new StorageMetadata.Builder()
+                    .build();
+
+            UploadTask uploadTask = imageref.putFile(mCurrentPhotoPath);
         }
     }
     // Detect faces by uploading a face image.
