@@ -1,7 +1,6 @@
 package com.example.romain.face_recognition;
 
 import java.io.*;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,15 +18,6 @@ import android.provider.*;
 import com.microsoft.projectoxford.face.*;
 import com.microsoft.projectoxford.face.contract.*;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-
 public class MainActivity extends Activity {
 
     private final int PICK_IMAGE = 1;
@@ -42,7 +32,7 @@ public class MainActivity extends Activity {
 
     // Replace `<Subscription Key>` with your subscription key.
 // For example, subscriptionKey = "0123456789abcdef0123456789ABCDEF"
-    private final String subscriptionKey = "594435f2812d44db824c54fa4103001f";
+    private final String subscriptionKey = "51b964794ebb418492fcabba535d5f7a";
 
     private final FaceServiceClient faceServiceClient =
             new FaceServiceRestClient(apiEndpoint, subscriptionKey);
@@ -97,41 +87,6 @@ public class MainActivity extends Activity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-//          Using HttpClient library
-
-//            HttpClient httpclient = HttpClients.createDefault();
-//
-//            try
-//            {
-//                URIBuilder builder = new URIBuilder("https://westus.api.cognitive.microsoft.com/face/v1.0/detect");
-//
-//                builder.setParameter("returnFaceId", "true");
-//                builder.setParameter("returnFaceLandmarks", "false");
-//                builder.setParameter("returnFaceAttributes", "{string}");
-//
-//                URI uri = builder.build();
-//                HttpPost request = new HttpPost(uri);
-//                request.setHeader("Content-Type", "application/json");
-//                request.setHeader("Ocp-Apim-Subscription-Key", "{subscription key}");
-//
-//
-//                // Request body
-//                StringEntity reqEntity = new StringEntity("{body}");
-//                request.setEntity(reqEntity);
-//
-//                HttpResponse response = httpclient.execute(request);
-//                HttpEntity entity = response.getEntity();
-//
-//                if (entity != null)
-//                {
-//                    System.out.println(EntityUtils.toString(entity));
-//                }
-//            }
-//            catch (Exception e)
-//            {
-//                System.out.println(e.getMessage());
-//            }
         }
     }
     // Detect faces by uploading a face image.
