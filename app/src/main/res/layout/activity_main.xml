@@ -18,19 +18,11 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_weight="1"
-            android:text="Browse images" />
-
-        <Button
             android:id="@+id/button2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:text="Take a photo" />
     </LinearLayout>
 </RelativeLayout>

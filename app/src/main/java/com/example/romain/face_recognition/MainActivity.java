@@ -1,11 +1,14 @@
 package com.example.romain.face_recognition;
 
 import java.io.*;
+import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.*;
 import android.content.*;
+import android.database.Cursor;
 import android.net.*;
 import android.os.*;
 import android.support.v4.content.FileProvider;
@@ -15,6 +18,15 @@ import android.widget.*;
 import android.provider.*;
 import com.microsoft.projectoxford.face.*;
 import com.microsoft.projectoxford.face.contract.*;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 public class MainActivity extends Activity {
 
@@ -39,17 +51,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button button1 = findViewById(R.id.button1);
         Button button2 = findViewById(R.id.button2);
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                startActivityForResult(Intent.createChooser(
-                        intent, "Select Picture"), PICK_IMAGE);
-            }
-        });
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,31 +84,10 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        System.out.println("MAYBE");
-        if(data != null)
-            System.out.print(data.getExtras());
-
-        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK &&
-                data != null && data.getData() != null) {
-            System.out.println("NO");
-            Uri uri = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(
-                        getContentResolver(), uri);
-                ImageView imageView = findViewById(R.id.imageView1);
-                imageView.setImageBitmap(bitmap);
-
-                // Comment out for tutorial
-                detectAndFrame(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK)
         {
-            System.out.println(mCurrentPhotoPath);
             try {
+                // Recover and display photo
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mCurrentPhotoPath);
                 ImageView imageView = findViewById(R.id.imageView1);
                 imageView.setImageBitmap(bitmap);
@@ -116,6 +97,41 @@ public class MainActivity extends Activity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+//          Using HttpClient library
+
+//            HttpClient httpclient = HttpClients.createDefault();
+//
+//            try
+//            {
+//                URIBuilder builder = new URIBuilder("https://westus.api.cognitive.microsoft.com/face/v1.0/detect");
+//
+//                builder.setParameter("returnFaceId", "true");
+//                builder.setParameter("returnFaceLandmarks", "false");
+//                builder.setParameter("returnFaceAttributes", "{string}");
+//
+//                URI uri = builder.build();
+//                HttpPost request = new HttpPost(uri);
+//                request.setHeader("Content-Type", "application/json");
+//                request.setHeader("Ocp-Apim-Subscription-Key", "{subscription key}");
+//
+//
+//                // Request body
+//                StringEntity reqEntity = new StringEntity("{body}");
+//                request.setEntity(reqEntity);
+//
+//                HttpResponse response = httpclient.execute(request);
+//                HttpEntity entity = response.getEntity();
+//
+//                if (entity != null)
+//                {
+//                    System.out.println(EntityUtils.toString(entity));
+//                }
+//            }
+//            catch (Exception e)
+//            {
+//                System.out.println(e.getMessage());
+//            }
         }
     }
     // Detect faces by uploading a face image.
@@ -144,6 +160,7 @@ public class MainActivity extends Activity {
                                     FaceServiceClient.FaceAttributeType.Gender }
                                 */
                             );
+
                             if (result == null){
                                 publishProgress(
                                         "Detection Finished. Nothing detected");
@@ -152,6 +169,7 @@ public class MainActivity extends Activity {
                             publishProgress(String.format(
                                     "Detection Finished. %d face(s) detected",
                                     result.length));
+
                             return result;
                         } catch (Exception e) {
                             exceptionMessage = String.format(
@@ -183,11 +201,92 @@ public class MainActivity extends Activity {
                         ImageView imageView = findViewById(R.id.imageView1);
                         imageView.setImageBitmap(
                                 drawFaceRectanglesOnBitmap(imageBitmap, result));
+
                         imageBitmap.recycle();
+
+                        compare(result);
                     }
                 };
 
         detectTask.execute(inputStream);
+    }
+
+    private void compare(Face[] faces)
+    {
+        // Fetch all photos in gallery (until we can connect to firebase)
+        Uri uri;
+        Cursor cursor;
+        int column_index;
+        String path = null,sortOrder;
+        ArrayList<String> imageList = new ArrayList<>();
+        uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = { MediaStore.MediaColumns.DATA };
+        //DATA is the path to the corresponding image. We only need this for loading //image into a recyclerview
+
+        sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " DESC";
+        //This sorts all images such that recent ones appear first
+
+        cursor = getContentResolver().query(uri, projection, null,null, sortOrder);
+
+        try{
+            if (null != cursor) {
+                column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+                while (cursor.moveToNext()) {
+                    path = cursor.getString(column_index);
+                    imageList.add(path);
+                }
+                cursor.close();
+            }
+            //imageList gets populated with paths to images by here
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        for (String imagePath :
+                imageList)
+        {
+            try
+            {
+                Face[] result = faceServiceClient.detect(
+                        imagePath,
+                        true,         // returnFaceId
+                        false,        // returnFaceLandmarks
+                        null          // returnFaceAttributes:
+                                /* new FaceServiceClient.FaceAttributeType[] {
+                                    FaceServiceClient.FaceAttributeType.Age,
+                                    FaceServiceClient.FaceAttributeType.Gender }
+                                */
+                );
+
+                for (Face faceStored :
+                        result) {
+                    for (Face faceInput:
+                         faces) {
+                        VerifyResult VResult = faceServiceClient.verify(faceInput.faceId, faceStored.faceId);
+
+                        if(VResult.isIdentical)
+                        {
+                            Toast.makeText(MainActivity.this, "Authorization granted",
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                    }
+                }
+
+                Toast.makeText(MainActivity.this, "Authorization denied",
+                        Toast.LENGTH_LONG).show();
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+
+        }
+
+
     }
 
     private void showError(String message) {
