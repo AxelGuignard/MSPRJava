@@ -17,7 +17,7 @@ import android.widget.*;
 import android.provider.*;
 
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
+//import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.microsoft.projectoxford.face.*;
@@ -25,7 +25,7 @@ import com.microsoft.projectoxford.face.contract.*;
 
 public class MainActivity extends Activity {
 
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
+//    private FirebaseStorage storage = FirebaseStorage.getInstance();
     private final int PICK_IMAGE = 1;
     private final int REQUEST_IMAGE_CAPTURE = 1;
     private ProgressDialog detectionProgressDialog;
@@ -93,12 +93,12 @@ public class MainActivity extends Activity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            StorageReference imageref = storage.getReference();
+//            StorageReference imageref = storage.getReference();
 
-            StorageMetadata metadata = new StorageMetadata.Builder()
-                    .build();
+//            StorageMetadata metadata = new StorageMetadata.Builder()
+//                    .build();
 
-            UploadTask uploadTask = imageref.putFile(mCurrentPhotoPath);
+//            UploadTask uploadTask = imageref.putFile(mCurrentPhotoPath);
         }
     }
     // Detect faces by uploading a face image.
@@ -171,90 +171,90 @@ public class MainActivity extends Activity {
 
                         imageBitmap.recycle();
 
-                        compare(result);
+//                        compare(result);
                     }
                 };
 
         detectTask.execute(inputStream);
     }
 
-    private void compare(Face[] faces)
-    {
-        // Fetch all photos in gallery (until we can connect to firebase)
-        Uri uri;
-        Cursor cursor;
-        int column_index;
-        String path = null,sortOrder;
-        ArrayList<String> imageList = new ArrayList<>();
-        uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = { MediaStore.MediaColumns.DATA };
-        //DATA is the path to the corresponding image. We only need this for loading //image into a recyclerview
-
-        sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " DESC";
-        //This sorts all images such that recent ones appear first
-
-        cursor = getContentResolver().query(uri, projection, null,null, sortOrder);
-
-        try{
-            if (null != cursor) {
-                column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-                while (cursor.moveToNext()) {
-                    path = cursor.getString(column_index);
-                    imageList.add(path);
-                }
-                cursor.close();
-            }
-            //imageList gets populated with paths to images by here
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        for (String imagePath :
-                imageList)
-        {
-            try
-            {
-                Face[] result = faceServiceClient.detect(
-                        imagePath,
-                        true,         // returnFaceId
-                        false,        // returnFaceLandmarks
-                        null          // returnFaceAttributes:
-                                /* new FaceServiceClient.FaceAttributeType[] {
-                                    FaceServiceClient.FaceAttributeType.Age,
-                                    FaceServiceClient.FaceAttributeType.Gender }
-                                */
-                );
-
-                for (Face faceStored :
-                        result) {
-                    for (Face faceInput:
-                         faces) {
-                        VerifyResult VResult = faceServiceClient.verify(faceInput.faceId, faceStored.faceId);
-
-                        if(VResult.isIdentical)
-                        {
-                            Toast.makeText(MainActivity.this, "Authorization granted",
-                                    Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                    }
-                }
-
-                Toast.makeText(MainActivity.this, "Authorization denied",
-                        Toast.LENGTH_LONG).show();
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
-
-
-        }
-
-
-    }
+//    private void compare(Face[] faces)
+//    {
+//        // Fetch all photos in gallery (until we can connect to firebase)
+//        Uri uri;
+//        Cursor cursor;
+//        int column_index;
+//        String path = null,sortOrder;
+//        ArrayList<String> imageList = new ArrayList<>();
+//        uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+//        String[] projection = { MediaStore.MediaColumns.DATA };
+//        //DATA is the path to the corresponding image. We only need this for loading //image into a recyclerview
+//
+//        sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " DESC";
+//        //This sorts all images such that recent ones appear first
+//
+//        cursor = getContentResolver().query(uri, projection, null,null, sortOrder);
+//
+//        try{
+//            if (null != cursor) {
+//                column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+//                while (cursor.moveToNext()) {
+//                    path = cursor.getString(column_index);
+//                    imageList.add(path);
+//                }
+//                cursor.close();
+//            }
+//            //imageList gets populated with paths to images by here
+//        }
+//        catch(Exception e)
+//        {
+//            e.printStackTrace();
+//        }
+//
+//        for (String imagePath :
+//                imageList)
+//        {
+//            try
+//            {
+//                Face[] result = faceServiceClient.detect(
+//                        imagePath,
+//                        true,         // returnFaceId
+//                        false,        // returnFaceLandmarks
+//                        null          // returnFaceAttributes:
+//                                /* new FaceServiceClient.FaceAttributeType[] {
+//                                    FaceServiceClient.FaceAttributeType.Age,
+//                                    FaceServiceClient.FaceAttributeType.Gender }
+//                                */
+//                );
+//
+//                for (Face faceStored :
+//                        result) {
+//                    for (Face faceInput:
+//                         faces) {
+//                        VerifyResult VResult = faceServiceClient.verify(faceInput.faceId, faceStored.faceId);
+//
+//                        if(VResult.isIdentical)
+//                        {
+//                            Toast.makeText(MainActivity.this, "Authorization granted",
+//                                    Toast.LENGTH_LONG).show();
+//                            return;
+//                        }
+//                    }
+//                }
+//
+//                Toast.makeText(MainActivity.this, "Authorization denied",
+//                        Toast.LENGTH_LONG).show();
+//            }
+//            catch(Exception e)
+//            {
+//                e.printStackTrace();
+//            }
+//
+//
+//        }
+//
+//
+//    }
 
     private void showError(String message) {
         new AlertDialog.Builder(this)
